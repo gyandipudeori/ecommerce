@@ -6,7 +6,6 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Models\Brand;
 use Filament\Forms\Set;
-use App\Models\Category;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -23,10 +22,9 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Actions\DeleteAction;
-use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\BrandResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\BrandResource\RelationManagers;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 
 class BrandResource extends Resource
 {
@@ -38,31 +36,34 @@ class BrandResource extends Resource
     {
         return $form
             ->schema([
-                Section::make([
-                    Grid::make()
-                        ->schema([
-                            TextInput::make('name')
-                                ->required()
-                                ->maxlength(255)
-                                ->live(onBlur: true)
-                                ->afterStateUpdated(fn(string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
+                Section::make()
+                    ->schema([
+                        Grid::make()
+                            ->schema([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(fn(string $operation, $state, Set $set) => 
+                                        $operation === 'create' ? $set('slug', Str::slug($state)) : null
+                                    ),
 
-                            TextInput::make('slug')
-                                ->maxLength(255)
-                                ->disabled()
-                                ->required()
-                                ->dehydrated()
-                                ->unique(Brand::class, 'slug', ignoreRecord: true)
-                        ]),
+                                TextInput::make('slug')
+                                    ->maxLength(255)
+                                    ->disabled()
+                                    ->required()
+                                    ->dehydrated()
+                                    ->unique(Brand::class, 'slug', ignoreRecord: true)
+                            ]),
 
-                    FileUpload::make('image')
-                        ->image()
-                        ->directory('categories'),
+                        FileUpload::make('image')
+                            ->image()
+                            ->directory('brands'),
 
-                    Toggle::make('is_active')
-                        ->required()
-                        ->default(true),
-                ])
+                        Toggle::make('is_active')
+                            ->required()
+                            ->default(true),
+                    ])
             ]);
     }
 
@@ -70,38 +71,29 @@ class BrandResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-
-                Tables\Columns\ImageColumn::make('image'),
-
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('name')->searchable(),
+                ImageColumn::make('image'),
+                TextColumn::make('slug')->searchable(),
+                IconColumn::make('is_active')->boolean(),
+                TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                // Add filters if needed
             ])
             ->actions([
-                ActionGroup::make([
-                    ViewAction::make(),
-                    EditAction::make(),
-                    DeleteAction::make(),
-                ])
-                ->label('Actions')
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make()
+                    ->requiresConfirmation()
+                    ->action(fn (Brand $record) => $record->forceDelete()) // Ensures delete works
+                    ->successNotificationTitle('Brand deleted successfully'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->action(fn ($records) => $records->each->forceDelete()) // Fixes bulk delete
+                        ->successNotificationTitle('Selected brands deleted successfully'),
                 ]),
             ]);
     }
@@ -109,7 +101,7 @@ class BrandResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            // Define any relations if necessary
         ];
     }
 
