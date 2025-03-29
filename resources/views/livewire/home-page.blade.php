@@ -139,6 +139,7 @@
     </div>
     <!-- End Grid -->
   </div>
+</div>
 {{-- Hero Section  End --}}
 
 {{-- brand section --}}
@@ -594,5 +595,5 @@
   </div>
 </section>
 {{-- Customer review end --}}
-  
+
 </div>
