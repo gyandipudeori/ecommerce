@@ -18,7 +18,7 @@ class Navbar extends Component
     // In your Navbar component
     #[On('update-cart-count')] 
     public function updateCartCount($total_count) {
-        $this->total_count = $total_count; // ✅ Updates without refresh
+        $this->total_count = $total_count; 
     }
 
 

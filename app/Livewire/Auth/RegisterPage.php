@@ -33,7 +33,8 @@ class RegisterPage extends Component
             'password' => Hash::make($this->password),
         ]);
         //login user
-        auth()-> login($user);
+        Auth::login($user);
+
 
         //redirect to home page
         return redirect()->intended();

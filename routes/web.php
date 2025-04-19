@@ -11,6 +11,7 @@ use App\Livewire\Auth\LoginPage;
 use App\Livewire\CategoriesPage;
 use App\Livewire\Auth\RegisterPage;
 use App\Livewire\ProductDetailPage;
+use Illuminate\Support\Facades\Auth;
 use App\Livewire\MyOrdersDetailsPage;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Auth\ResetPasswordPage;
@@ -24,21 +25,22 @@ Route::get('/cart',CartPage::class);
 Route::get('/products/{slug}', ProductDetailPage::class);
 
 
-Route::middleware('geust')->group(function(){
-    Route::get('/login', LoginPage::class);
+    Route::middleware('guest')->group(function(){
+    Route::get('/login', LoginPage::class)->name('login');
     Route::get('/register', RegisterPage::class);
-    Route::get('/forgot', ForgotPasswordPage::class);
-    Route::get('/reset', ResetPasswordPage::class);
-});
+    Route::get('/forgot', ForgotPasswordPage::class)->name('password.request');
+    Route::get('/reset/{token}', ResetPasswordPage::class)->name('password.reset');
+    });
 
-Route::middleware('auth')->group(function(){
+    Route::middleware('auth')->group(function(){
     Route::get('/logout', function(){
-        auth()->logout();
+        Auth::logout();
         return redirect('/');
     });
+
     Route::get('/checkout',CheckoutPage::class);
     Route::get('/my-orders',MyOrdersPage::class);
     Route::get('/my-orders/{order}',MyOrdersDetailsPage::class);
     Route::get('/success', SuccessPage::class);
     Route::get('/cancel', CancelPage::class);
-});
+    });

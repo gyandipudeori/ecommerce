@@ -16,6 +16,8 @@
         </main>
         @livewire('partials.footer')
         @livewireScripts
+        <script src="https://cdn.jsdelivr.net/npm/preline@latest/dist/preline.min.js"></script>
+
     </body>
    
 </html>

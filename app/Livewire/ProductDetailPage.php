@@ -29,8 +29,8 @@ class ProductDetailPage extends Component
     }
 
     public function addToCart($product_id) {
-        $result = CartManagement::addItemToCart($product_id);
-        $this->dispatch('update-cart-count', total_count: $result['total_count']); // ✅ Fire event
+        $result = CartManagement::addItemToCartWithQty($product_id, $this->quantity);
+        $this->dispatch('update-cart-count', total_count: $result['total_count']);
       
     }
     public function render()
