@@ -63,7 +63,7 @@ class CartManagement {
                 $cart_items[] = [
                     'product_id' => $product_id,
                     'name' => $product->name,
-                    'image' => isset($product->image) && is_array($product->images) ? $product->images[0] : null,
+                    'image' => isset($product->images) && is_array($product->images) ? $product->images[0] : null,
                     'quantity' => $qty,
                     'unit_amount' => $product->price,
                     'total_amount' => $product->price,

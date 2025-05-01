@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('street_address')->nullable();
             $table->string('city')->nullable();
             $table->string('state')->nullable();
-            $table->string('zipcode')->nullable();
+            $table->string('zip_code')->nullable();
             $table->timestamps();
         });
     }

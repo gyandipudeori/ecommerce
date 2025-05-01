@@ -103,10 +103,10 @@ class OrderResource extends Resource
                         ]),
                         Select::make('currency')
                         ->options([
-                            'inr'=>'INR',
-                            'usd'=>'USD',
-                            'eur'=>'EUR',
-                            'gbp'=>'GBP'
+                            'inr' => '₹ INR',
+                            'usd' => '$ USD',
+                            'eur' => '€ EUR',
+                            'gbp' => '£ GBP',
                         ])
                         ->default('inr')
                         ->required(),
@@ -207,8 +207,19 @@ class OrderResource extends Resource
                 ->sortable(),
 
                 TextColumn::make('currency')
-                ->searchable()
-                ->sortable(),
+                ->label('Currency')
+                ->formatStateUsing(function ($state) {
+                return match(strtolower($state)) {
+                'inr' => '₹ INR',
+                'usd' => '$ USD',
+                'eur' => '€ EUR',
+                'gbp' => '£ GBP',
+                 default => strtoupper($state),
+                };
+                })
+                ->sortable()
+                ->searchable(),
+
 
                 TextColumn::make('shipping_method')
                 ->sortable()
